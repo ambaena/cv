@@ -1,0 +1,41 @@
+name: Generate pdf from index.html and commit it.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+
+jobs:
+  generate-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate png from html
+        shell: bash
+        run: | 
+          HTML=$(cat index.html)
+          curl -X POST https://hcti.io/v1/image -u '${{secrets.HCTI_USER}}:${{secrets.HCTI_PASSWORD}}' \
+            -d html="$HTML" \
+            -d selector="#cv" \
+            -d google_fonts="font-sans" \
+            -o response.json
+      
+      - name: Get image
+        run: curl -o resume.png $(jq -r '.url' response.json)
+
+      - name: Change ImageMagick policy to allow pdf conversion.
+        run: |
+          sudo sed -i 's/^.*policy.*coder.*none.*PDF.*//' /etc/ImageMagick-6/policy.xml
+
+      - name: Convert to pdf
+        run: convert resume.png resume.pdf
+
+      - name: Commit and push
+        run: |
+          git config user.name ambaena
+          git config user.email alfonsombaena@gmail.com
+          git add resume.pdf
+          git diff --quiet && git diff --staged --quiet || git commit -m "🤖 ci: update resume.pdf with latest info"
+          git push origin main
