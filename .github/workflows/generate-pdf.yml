@@ -37,5 +37,5 @@ jobs:
           git config user.name ambaena
           git config user.email alfonsombaena@gmail.com
           git add resume.pdf
-          git diff --quiet && git diff --staged --quiet || git commit -m "🤖 ci: update resume.pdf with latest info"
+          git diff --quiet && git diff --staged --quiet || git commit -m "[BOT] 🤖: update resume.pdf with latest info"
           git push origin main
