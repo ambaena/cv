@@ -15,13 +15,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '22'
 
       - name: Install Puppeteer
         run: npm install puppeteer
 
       - name: Generate PDF with Puppeteer
-        run: node scipts/generate-pdf.js
+        run: node scripts/generate-pdf.js
 
       - name: Commit and push
         run: |
